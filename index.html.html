@@ -1,0 +1,694 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Robot Control</title>
+    <style>
+        /* --- Global Variables and Resets --- */
+        :root {
+            --color-primary: #00bcd4; /* Cyan/Aqua - Professional Tech Look */
+            --color-secondary: #ff9800; /* Orange/Amber for Warnings/Highlights */
+            --color-danger: #e53935; /* Red for Emergency Stop */
+            --color-success: #4caf50; /* Green for Connection Status */
+            
+            /* Dark Mode (Default) */
+            --color-text-dark: #e0e0e0;
+            --color-bg-dark: #1e1e1e;
+            --color-card-dark: #2a2a2a;
+            --color-border-dark: #3a3a3a;
+            
+            /* Light Mode */
+            --color-text-light: #333;
+            --color-bg-light: #f4f7f9;
+            --color-card-light: #ffffff;
+            --color-border-light: #e0e0e0;
+
+            --transition-speed: 0.3s;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Base theme switching */
+        .dark-mode {
+            --color-text: var(--color-text-dark);
+            --color-background: var(--color-bg-dark);
+            --color-card: var(--color-card-dark);
+            --color-border: var(--color-border-dark);
+        }
+
+        .light-mode {
+            --color-text: var(--color-text-light);
+            --color-background: var(--color-bg-light);
+            --color-card: var(--color-card-light);
+            --color-border: var(--color-border-light);
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            background-color: var(--color-card);
+            border-bottom: 1px solid var(--color-primary);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--color-primary);
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li a {
+            color: var(--color-text);
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav ul li a:hover {
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        /* --- Hero/3D Section (Stylish Stems) --- */
+        .hero-3d {
+            height: 70vh; 
+            background-color: var(--color-bg-dark); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            /* Aesthetic "stems" background effect using subtle repeated lines */
+            background-image: radial-gradient(circle at center, rgba(255, 4, 4, 0.1), rgba(11, 1, 1, 0.8)),
+                              repeating-linear-gradient(0deg, #6d6969 0, #3a3a3a 1px, #561a1a 2px);
+            border-bottom: 3px solid var(--color-primary);
+        }
+
+        #threejs-container {
+            width: 100%;
+            height: 100%;
+            color: white;
+            text-align: center;
+            padding-top: 15%; 
+        }
+
+        h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+        }
+
+        /* --- General Tool Section Styling --- */
+        .tool-section {
+            padding: 40px 0;
+        }
+
+        .section-divider {
+            border: none;
+            height: 1px;
+            background-color: var(--color-border);
+            margin: 20px 0;
+        }
+
+        .section-divider-small {
+            border: none;
+            height: 1px;
+            background-color: var(--color-border);
+            margin: 15px 0;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: var(--color-primary);
+            margin-bottom: 25px;
+            border-left: 6px solid var(--color-primary);
+            padding-left: 15px;
+            font-weight: 300;
+        }
+
+        .tool-content {
+            background-color: var(--color-card);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Button Base Styles */
+        button {
+            border: none;
+            padding: 12px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Connect Tool Styling --- */
+        .connection-status {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #connection-state {
+            font-size: 1.5em;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: var(--color-bg-dark);
+            display: inline-block; /* Added for proper padding and background */
+        }
+
+        .disconnected {
+            background-color: var(--color-danger);
+            animation: blink-red 2s infinite;
+        }
+
+        .connected {
+            background-color: var(--color-success);
+            animation: none;
+        }
+
+        @keyframes blink-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .connection-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .connect-btn {
+            flex-grow: 1;
+            color: white;
+            background-color: var(--color-secondary); /* Bluetooth color */
+        }
+
+        .connect-btn:hover {
+            background-color: #d17500;
+        }
+
+        .danger-btn {
+            background-color: #616161; /* Disconnect button (greyed out when disabled) */
+            color: white;
+        }
+
+        .danger-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .bluetooth-note {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+
+        /* --- Video Placeholder --- */
+        .video-placeholder {
+            background-color: #000;
+            height: 450px;
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            font-size: 1.5em;
+            border: 1px solid var(--color-primary);
+        }
+
+        /* --- Control Tool Specific Layout --- */
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .control-panel {
+            border: 1px solid var(--color-border);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        h3 {
+            color: var(--color-secondary);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 10px;
+        }
+
+        .action-btn {
+            flex-grow: 1;
+            background-color: var(--color-secondary);
+            color: var(--color-bg-dark);
+        }
+
+        .move-btn {
+            background-color: var(--color-text);
+            color: var(--color-bg-dark);
+        }
+        
+        /* D-Pad Styling */
+        .dpad-container {
+            /* Use CSS Grid for the 3x3 layout */
+            display: grid;
+            grid-template-columns: repeat(3, 70px); /* Larger for mobile tap targets */
+            grid-template-rows: repeat(3, 70px);
+            grid-template-areas:
+                ". up ."
+                "left center right"
+                ". down .";
+            width: 210px; /* Overall width */
+            height: 210px; /* Overall height */
+            margin: 20px auto; /* Center on control panel */
+        }
+
+        .dpad-button {
+            /* Common styling for all buttons */
+            background-color: #3b82f6; /* Blue background */
+            border-radius: 50%; /* Makes it circular */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #cccccc; /* Light gray color for the arrow */
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.1s;
+        }
+
+        .dpad-button:active {
+            box-shadow: none;
+            transform: translateY(2px);
+        }
+
+        /* Positioning the buttons in the grid */
+        .up    { grid-area: up;    }
+        .left  { grid-area: left;  }
+        .right { grid-area: right; }
+        .down  { grid-area: down;  }
+
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--color-card);
+            border-top: 1px solid var(--color-primary);
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+        
+        /* Mobile-Specific Overrides */
+        @media (max-width: 800px) {
+            header {
+                flex-direction: column;
+                padding: 15px 20px;
+            }
+            nav ul {
+                margin: 10px 0;
+            }
+            .controls {
+                margin-top: 10px;
+            }
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 3em;
+            }
+            .control-grid {
+                grid-template-columns: 1fr; /* Stack columns on small screens */
+            }
+            .connection-options {
+                flex-direction: column;
+            }
+            .dpad-container {
+                /* Keep D-Pad centered and large for easy tapping */
+                grid-template-columns: repeat(3, 60px);
+                grid-template-rows: repeat(3, 60px);
+                width: 180px;
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <header>
+        <div class="logo">🤖 ST STEM</div>
+        <nav>
+            <ul>
+                
+                <li><a href="#video-tool" data-i18n="nav_video">Video </a></li>
+                <li><a href="#control-tool" data-i18n="nav_control">Control</a></li>
+                <li><a href="#connect-tool" data-i18n="nav_connect">Connect</a></li> </ul>
+        </nav>
+        <div class="controls">
+            <select id="language-switcher">
+                <option value="en">English</option>
+                <option value="kh">ខ្មែរ</option>
+            </select>
+            <button id="mode-toggle" aria-label="Toggle dark/light mode">
+                ☀️
+            </button>
+        </div>
+    </header>
+
+    <section id="hero" class="hero-3d">
+        <div id="threejs-container">
+            <h1 data-i18n="hero_title">ST STEM</h1>
+            <p data-i18n="hero_subtitle">Controller</p>
+        </div>
+    </section>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bluetooth Connect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background-color: #000000;
+    }
+    button {
+      background: #0078d7;
+      color: rgb(0, 0, 0);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔵 Connect to a Bluetooth Device</h2>
+  <button id="connectBtn">Connect</button>
+  <p id="status">Status: Not connected</p>
+
+  <script>
+    const btn = document.getElementById("connectBtn");
+    const status = document.getElementById("status");
+
+    btn.addEventListener("click", async () => {
+      try {
+        if (!navigator.bluetooth) {
+          alert("❌ Bluetooth not supported by your browser.");
+          return;
+        }
+
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true
+        });
+
+        status.textContent = `✅ Device found: ${device.name || "Unknown"}`;
+
+        device.addEventListener('gattserverdisconnected', () => {
+          status.textContent = "🔴 Device disconnected";
+        });
+
+        const server = await device.gatt.connect();
+        status.textContent = `🟢 Connected to: ${device.name || "Unnamed device"}`;
+        console.log("Connected to:", device);
+      } catch (error) {
+        console.error("Bluetooth error:", error);
+        status.textContent = "❌ Connection failed or cancelled.";
+      }
+    });
+  </script>
+</body>
+
+
+            </div>
+        </section>
+        
+        <hr class="section-divider">
+
+        <section id="video-tool" class="tool-section">
+            <h2 data-i18n="sec_video_title">Video  🎥</h2>
+            <div class="tool-content">
+                <p data-i18n="sec_video_desc"></p>
+                
+                <div class="section-divider-small"></div>
+            
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="control-tool" class="tool-section">
+            <h2 data-i18n="sec_control_title">Control Tool 🎮</h2>
+            <div class="tool-content control-grid">
+                <div class="control-panel">
+                    <h3>Direct Movement</h3>
+                    <div class="dpad-container">
+                        <div class="dpad-button up" data-command="UP">▲</div>
+                        <div class="dpad-button left" data-command="LEFT">◀</div>
+                        <div class="dpad-button right" data-command="RIGHT">▶</div>
+                        <div class="dpad-button down" data-command="DOWN">▼</div>
+                    </div>
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Stung treng.</p>
+    </footer>
+
+    <script>
+        // --- Merged script.js content ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const modeToggle = document.getElementById('mode-toggle');
+            const langSwitcher = document.getElementById('language-switcher');
+            const connectBluetoothBtn = document.getElementById('connect-bluetooth-btn');
+            const disconnectBluetoothBtn = document.getElementById('disconnect-bluetooth-btn');
+            const connectionState = document.getElementById('connection-state');
+
+            // --- 1. Language Data Structure ---
+            const translations = {
+                en: {
+                    title: "Robot Arm Control",
+                    nav_video: "Video",
+                    nav_control: "Control",
+                    nav_connect: "Connect",
+                    hero_title: "ST STEM",
+                    hero_subtitle: "Controller",
+                    sec_connect_title: "Connection  📡",
+                    sec_connect_desc: "Establish a secure connection to the robot arm via Web Bluetooth for direct mobile control.",
+                    btn_connect_bluetooth: "Connect via Bluetooth (Mobile Controller)",
+                    btn_disconnect_bluetooth: "Disconnect",
+                    bluetooth_note: "*Requires HTTPS and a browser supporting the Web Bluetooth API (e.g., Chrome, Edge).",
+                    status_disconnected: "Status: Disconnected",
+                    status_connected: "Status: Connected",
+                    sec_video_title: "Video Tool 🎥",
+                    sec_video_desc: "connect with robot.",
+                    sec_control_title: "Control Tool 🎮",
+                
+                },
+                kh: {
+                    title: "Robot Arm Control", 
+                    nav_video: "ឧបករណ៍វីដេអូ", 
+                    nav_control: "ឧបករណ៍បញ្ជា", 
+                    nav_connect: "ភ្ជាប់",
+                    hero_title: "ST STEM", 
+                    hero_subtitle: "បញ្ជា", 
+                    sec_connect_title: "កម្មវិធីគ្រប់គ្រងការតភ្ជាប់ 📡",
+                    sec_connect_desc: "បង្កើតការតភ្ជាប់ដែលមានសុវត្ថិភាពទៅកាន់ដៃរ៉ូបូតតាមរយៈ Web Bluetooth សម្រាប់ការគ្រប់គ្រងដោយផ្ទាល់។",
+                    btn_connect_bluetooth: "ភ្ជាប់តាមរយៈប៊្លូធូស (ឧបករណ៍បញ្ជាចល័ត)",
+                    btn_disconnect_bluetooth: "ផ្តាច់",
+                    bluetooth_note: "*ទាមទារ HTTPS និងកម្មវិធីរុករកដែលគាំទ្រ Web Bluetooth API (ដូចជា Chrome, Edge)។",
+                    status_disconnected: "ស្ថានភាព: ផ្តាច់",
+                    status_connected: "ស្ថានភាព: ភ្ជាប់",
+                    sec_video_title: "ឧបករណ៍វីដេអូ 🎥",
+                    sec_video_desc: "ភ្ជាប់ទៅកាន់ robot។",
+                    sec_control_title: "ឧបករណ៍បញ្ជា 🎮",
+                },
+            
+            };
+
+            // --- 2. Dark/Light Mode Toggle ---
+            const currentMode = localStorage.getItem('mode') || 'dark';
+            body.className = currentMode + '-mode';
+            modeToggle.textContent = currentMode === 'dark' ? '☀️' : '🌙';
+
+            modeToggle.addEventListener('click', () => {
+                const newMode = body.classList.contains('light-mode') ? 'dark' : 'light';
+                body.className = newMode + '-mode';
+                modeToggle.textContent = newMode === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('mode', newMode);
+            });
+
+            // --- 3. Localization Functionality ---
+            const setLanguage = (lang) => {
+                const elements = document.querySelectorAll('[data-i18n]');
+                const texts = translations[lang];
+                if (!texts) return;
+
+                elements.forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (texts[key]) {
+                        if (key === 'title') {
+                            document.title = texts[key];
+                        } 
+                        else if (el.tagName !== 'SELECT') { // Exclude the SELECT element itself
+                            el.textContent = texts[key];
+                        }
+
+                        // Special handling for button text/status text
+                        if (el.id === 'connection-state') {
+                             // Update the status text based on current connection state
+                             const isConnected = el.classList.contains('connected');
+                             el.textContent = isConnected ? texts['status_connected'] : texts['status_disconnected'];
+                        } else if (el.id === 'connect-bluetooth-btn') {
+                            // Ensure button text is set
+                            el.textContent = texts['btn_connect_bluetooth'];
+                        } else if (el.id === 'disconnect-bluetooth-btn') {
+                            // Ensure button text is set
+                            el.textContent = texts['btn_disconnect_bluetooth'];
+                        }
+                    }
+                });
+                localStorage.setItem('lang', lang);
+            };
+
+            langSwitcher.value = localStorage.getItem('lang') || 'en';
+            setLanguage(langSwitcher.value);
+
+            langSwitcher.addEventListener('change', (event) => {
+                setLanguage(event.target.value);
+            });
+            
+            // --- Connection Status UI Update Function ---
+            const updateConnectionState = (isConnected) => {
+                const lang = langSwitcher.value;
+                const texts = translations[lang];
+
+                if (isConnected) {
+                    connectionState.classList.remove('disconnected');
+                    connectionState.classList.add('connected');
+                    connectionState.textContent = texts['status_connected'];
+                    connectBluetoothBtn.disabled = true;
+                    disconnectBluetoothBtn.disabled = false;
+                } else {
+                    connectionState.classList.remove('connected');
+                    connectionState.classList.add('disconnected');
+                    connectionState.textContent = texts['status_disconnected'];
+                    connectBluetoothBtn.disabled = false;
+                    disconnectBluetoothBtn.disabled = true;
+                }
+            };
+
+
+            // --- 4. Web Bluetooth Connection Logic (Mock/Placeholder) ---
+            let bluetoothDevice = null;
+            let controlCharacteristic = null; // GATT characteristic for sending commands
+
+            // MOCK/PLACEHOLDER: Replace with actual Web Bluetooth API logic
+            const connectBluetooth = async () => {
+                 console.log('Attempting to connect via Web Bluetooth...');
+                 updateConnectionState(true); // Mock successful connection
+            };
+
+            const disconnectBluetooth = () => {
+                console.log('Disconnecting from Bluetooth...');
+                updateConnectionState(false); // Mock disconnection
+            };
+
+            connectBluetoothBtn.addEventListener('click', connectBluetooth);
+            disconnectBluetoothBtn.addEventListener('click', disconnectBluetooth);
+            
+            // Initial state setup
+            updateConnectionState(false); 
+
+
+            // --- 5. D-Pad Control Logic (Continuous command placeholder) ---
+            const dpadButtons = document.querySelectorAll('.dpad-button');
+            
+            const sendCommand = (commandKey) => {
+                console.log(`Sending command: ${commandKey}`);
+                // Actual Web Bluetooth write operation would go here:
+                // if (controlCharacteristic) {
+                //     const data = new Uint8Array([commandMap[commandKey]]);
+                //     controlCharacteristic.writeValue(data);
+                // }
+            }
+
+            dpadButtons.forEach(button => {
+                // Use mousedown and touchstart for continuous action
+                button.addEventListener('mousedown', (e) => {
+                    const commandKey = button.getAttribute('data-command');
+                    sendCommand(commandKey);
+                });
+                
+                button.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // Prevent mobile scrolling/default action
+                    const commandKey = button.getAttribute('data-command');
+                    sendCommand(commandKey);
+                });
+
+                // Use mouseup, mouseleave, and touchend for sending a 'STOP' command
+                const stopEvent = () => {
+                     sendCommand('CMD_STOP'); // Placeholder stop command
+                };
+
+                button.addEventListener('mouseup', stopEvent);
+                button.addEventListener('mouseleave', stopEvent);
+                button.addEventListener('touchend', stopEvent);
+            });
+        });
+    </script>
+</body>
+</html>
+```
