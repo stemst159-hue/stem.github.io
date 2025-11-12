@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stem kit controller</title>
+</head>
+<body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="title">Stemkits cotroller</title>
     <style>
         /* --- Global Variables and Resets --- */
@@ -469,7 +476,7 @@
 </head>
 <body class="light-mode">
     <header>
-        <div class="logo">🤖 ST STEM</div>
+        <div class="logo"> <img src="stemwebsite/photo_2025-11-11_20-08-29-removebg-preview.png"> T4S</div>
         <nav>
             <ul>
                 
@@ -527,44 +534,68 @@
   </style>
 </head>
 <body>
-  <h2>🔵 Connect to a Bluetooth Device</h2>
-  <button id="connectBtn">Connect</button>
-  <p id="status">Status: Not connected</p>
+ <button id="connect-hm10">Connect HM-10 (BLE)</button>
+<button id="connect-hc05">Connect HC-05 (Serial)</button>
+<p id="bt-status">Status: Not connected</p>
 
-  <script>
-    const btn = document.getElementById("connectBtn");
-    const status = document.getElementById("status");
+<script>
+let bleDevice = null;
+let bleCharacteristic = null;
+let serialPort = null;
+let serialWriter = null;
 
-    btn.addEventListener("click", async () => {
-      try {
-        if (!navigator.bluetooth) {
-          alert("❌ Bluetooth not supported by your browser.");
-          return;
-        }
-
-        const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true
+// --- HM-10 BLE Connect ---
+document.getElementById('connect-hm10').addEventListener('click', async () => {
+    try {
+        bleDevice = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: 'HM' }], // matches HM-10 default names
+            optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb'] // HM-10 service UUID
         });
+        const server = await bleDevice.gatt.connect();
+        const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+        bleCharacteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+        document.getElementById('bt-status').textContent = `Connected to HM-10: ${bleDevice.name}`;
+    } catch (err) {
+        console.error(err);
+        document.getElementById('bt-status').textContent = 'BLE Connection Failed';
+    }
+});
 
-        status.textContent = `✅ Device found: ${device.name || "Unknown"}`;
+// --- HC-05 Serial Connect ---
+document.getElementById('connect-hc05').addEventListener('click', async () => {
+    try {
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 9600 });
+        serialWriter = serialPort.writable.getWriter();
+        document.getElementById('bt-status').textContent = 'Connected to HC-05';
+    } catch (err) {
+        console.error(err);
+        document.getElementById('bt-status').textContent = 'Serial Connection Failed';
+    }
+});
 
-        device.addEventListener('gattserverdisconnected', () => {
-          status.textContent = "🔴 Device disconnected";
-        });
+// --- Send Commands ---
+async function sendCommand(cmd) {
+    if (bleCharacteristic) {
+        const data = new TextEncoder().encode(cmd);
+        await bleCharacteristic.writeValue(data);
+        console.log('Sent via HM-10:', cmd);
+    }
+    if (serialWriter) {
+        await serialWriter.write(new TextEncoder().encode(cmd));
+        console.log('Sent via HC-05:', cmd);
+    }
+}
 
-        const server = await device.gatt.connect();
-        status.textContent = `🟢 Connected to: ${device.name || "Unnamed device"}`;
-        console.log("Connected to:", device);
-      } catch (error) {
-        console.error("Bluetooth error:", error);
-        status.textContent = "❌ Connection failed or cancelled.";
-      }
-    });
-  </script>
-</body>
+// Example: Hooking buttons
+document.getElementById('btn-forward').addEventListener('click', () => sendCommand('F'));
+document.getElementById('btn-backward').addEventListener('click', () => sendCommand('B'));
+document.getElementById('btn-left').addEventListener('click', () => sendCommand('L'));
+document.getElementById('btn-right').addEventListener('click', () => sendCommand('R'));
+document.getElementById('btn-start').addEventListener('click', () => sendCommand('S'));
+document.getElementById('btn-stop').addEventListener('click', () => sendCommand('X'));
+</script>
 
-
-            </div>
         </section>
         
   
@@ -575,22 +606,120 @@
 
     <section id="video-tool" class="tool-section">
         <h2 data-i18n="sec_video_title">Video 🎥</h2>
-         <video 
-                    id="robot-video" 
-                    class="w-full rounded-lg border border-gray-700 shadow-xl" 
-                    src="IMG_4159.MOV" 
-                    type="video/quicktime" 
-                    controls 
-                    loop 
-                    muted 
-                    autoplay 
-                    style="max-height: 450px; object-fit: cover; background-color: #000;"
-                    width="30px" height="30px"
-                >
-                
-                </video>
+        <style>
+        /* កុងតឺន័រសម្រាប់ដាក់វីដេអូទាំងពីរ */
+        .video-container {
+            display: flex;        /* ប្រើ Flexbox ដើម្បីដាក់វីដេអូជាប់គ្នា */
+            gap: 20px;            /* កំណត់គម្លាតរវាងវីដេអូទាំងពីរ: 2cm = 20px */
+            padding: 20px;        /* បន្ថែម padding ខ្លះសម្រាប់មើលងាយ */
+            border: 1px solid #ccc; /* គ្រាន់តែជាបន្ទាត់សម្រាប់មើលព្រំដែន */
+        }
         
-        </div>
+        /* កំណត់លក្ខណៈវីដេអូ */
+        .video-container video {
+            /* មិនចាំបាច់កំណត់ width/height ឡើងវិញទេ ព្រោះមានក្នុង HTML attribute រួចហើយ */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* ស្រមោលបន្តិចបន្តួច */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container">
+        <video id="robot-video-1" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="500px" 
+               height="500px"
+        >
+            Your browser does not support the video tag.
+        </video>
+        
+        <video id="robot-video-2" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="500px" 
+               height="500px"
+        >
+            Your browser does not support the video tag.
+        </video>
+         <video id="robot-video-2" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="500px" 
+               height="500px"
+        >
+            Your browser does not support the video tag.
+        </video>
+        
+    </div>
+    </video>
+         <style>
+        /* កុងតឺន័រសម្រាប់ដាក់វីដេអូទាំងពីរ */
+        .video-container {
+            display: flex;        /* ប្រើ Flexbox ដើម្បីដាក់វីដេអូជាប់គ្នា */
+            gap: 20px;            /* កំណត់គម្លាតរវាងវីដេអូទាំងពីរ: 2cm = 20px */
+            padding: 20px;        /* បន្ថែម padding ខ្លះសម្រាប់មើលងាយ */
+            border: 1px solid #ccc; /* គ្រាន់តែជាបន្ទាត់សម្រាប់មើលព្រំដែន */
+        }
+        
+        /* កំណត់លក្ខណៈវីដេអូ */
+        .video-container video {
+            /* មិនចាំបាច់កំណត់ width/height ឡើងវិញទេ ព្រោះមានក្នុង HTML attribute រួចហើយ */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* ស្រមោលបន្តិចបន្តួច */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container">
+        <video id="robot-video-1" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="500px" 
+               height="500px"
+        >
+            Your browser does not support the video tag.
+        </video>
+        <video id="robot-video-1" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="500px" 
+               height="500px"
+        >
+            Your browser does not support the video tag.
+        </video><video id="robot-video-1" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="500px" 
+               height="500px"
+        >
+            Your browser does not support the video tag.
+        </video>
+        
     </section>
 
     <hr class="section-divider">
