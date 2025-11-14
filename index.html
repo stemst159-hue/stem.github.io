@@ -58,12 +58,17 @@
             transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
         }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text);
-            line-height: 1.6;
-        }
+     body {
+    font-family: 'Roboto', sans-serif;
+    background: url('c:\Users\Dell\Downloads\Telegram Desktop\photo_2025-11-11_20-08-29.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--color-text);
+    line-height: 1.6;
+}
+s
+
+
+        
 
         .container {
             max-width: 1300px;
@@ -111,27 +116,22 @@
         }
 
         /* --- Hero/3D Section (Stylish Stems) --- */
-        .hero-3d {
-            height: 70vh; 
-            background-color: var(--color-bg-dark); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            /* Aesthetic "stems" background effect using subtle repeated lines */
-            background-image: radial-gradient(circle at center, rgba(255, 4, 4, 0.1), rgba(11, 1, 1, 0.8)),
-                              repeating-linear-gradient(0deg, #6d6969 0, #3a3a3a 1px, #561a1a 2px);
-            border-bottom: 3px solid var(--color-primary);
-        }
+       .hero-3d {
+    height: 70vh;
+    background: url('a969ab4c-bdcf-439e-bcb8-d1afb6c8ae9f.png') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid var(--color-primary);
+}
 
-        #threejs-container {
-            width: 100%;
-            height: 100%;
-            color: white;
-            text-align: center;
-            padding-top: 15%; 
-        }
+
+
+
+        
 
         h1 {
             font-size: 4em;
@@ -476,7 +476,10 @@
 </head>
 <body class="light-mode">
     <header>
-        <div class="logo"> <img src="stemwebsite/photo_2025-11-11_20-08-29-removebg-preview.png"> T4S</div>
+       <div class="logo">
+       Teach 4 School
+</div> 
+
         <nav>
             <ul>
                 
@@ -497,7 +500,7 @@
 
     <section id="hero" class="hero-3d">
         <div id="threejs-container">
-            <h1 data-i18n="hero_title">ST STEM</h1>
+            <h1 data-i18n="hero_title">EDUCATION ROBT KIT </h1>
             <p data-i18n="hero_subtitle">Controller</p>
         </div>
     </section>
@@ -632,8 +635,8 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                loop 
                muted 
                autoplay 
-               width="500px" 
-               height="500px"
+               width="300px" 
+               height="300px"
         >
             Your browser does not support the video tag.
         </video>
@@ -645,8 +648,8 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                loop 
                muted 
                autoplay 
-               width="500px" 
-               height="500px"
+               width="300px" 
+               height="300px"
         >
             Your browser does not support the video tag.
         </video>
@@ -657,8 +660,20 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                loop 
                muted 
                autoplay 
-               width="500px" 
-               height="500px"
+               width="300px" 
+               height="300px"
+        >
+            Your browser does not support the video tag.
+        </video>
+        </video><video id="robot-video-1" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="300px" 
+               height="300px"
         >
             Your browser does not support the video tag.
         </video>
@@ -691,8 +706,8 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                loop 
                muted 
                autoplay 
-               width="500px" 
-               height="500px"
+               width="300px" 
+               height="300px"
         >
             Your browser does not support the video tag.
         </video>
@@ -703,8 +718,8 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                loop 
                muted 
                autoplay 
-               width="500px" 
-               height="500px"
+               width="300px" 
+               height="300px"
         >
             Your browser does not support the video tag.
         </video><video id="robot-video-1" 
@@ -714,11 +729,24 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                loop 
                muted 
                autoplay 
-               width="500px" 
-               height="500px"
+               width="300px" 
+               height="300px"
         >
             Your browser does not support the video tag.
         </video>
+        </video><video id="robot-video-1" 
+               src="IMG_4159.MOV" 
+               type="video/quicktime" 
+               controls 
+               loop 
+               muted 
+               autoplay 
+               width="300px" 
+               height="300px"
+        >
+            Your browser does not support the video tag.
+        </video>
+        
         
     </section>
 
@@ -754,9 +782,10 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                     <button id="btn-stop" class="pill-button w-full" data-action="stop">
                         STOP
                     </button>
-                    <button id="btn-start" class="pill-button w-full" data-action="start">
+                     <button id="btn-start" class="pill-button w-full" data-action="start">
                         START
                     </button>
+                   
                 </div>
 
                 <div class="flex items-center justify-center space-x-6">
@@ -778,7 +807,7 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
         </div>
     </section>
     <footer>
-        <p>&copy; Stung treng.</p>
+        <p>&copy; Teach 4 School.</p>
     </footer>
 
     <script>
@@ -799,7 +828,7 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                     nav_video: "Video",
                     nav_control: "Control",
                     nav_connect: "Connect",
-                    hero_title: "ST STEM",
+                    hero_title: "EDUCATION ROBT KIT",
                     hero_subtitle: "Controller",
                     sec_connect_title: "Connection 📡",
                     sec_connect_desc: "Establish a secure connection to the robot arm via Web Bluetooth for direct mobile control.",
@@ -818,7 +847,7 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                     nav_video: "ឧបករណ៍វីដេអូ", 
                     nav_control: "ឧបករណ៍បញ្ជា", 
                     nav_connect: "ភ្ជាប់",
-                    hero_title: "ST STEM", 
+                    hero_title: "EDUCATION ROBT KIT", 
                     hero_subtitle: "បញ្ជា", 
                     sec_connect_title: "កម្មវិធីគ្រប់គ្រងការតភ្ជាប់ 📡",
                     sec_connect_desc: "បង្កើតការតភ្ជាប់ដែលមានសុវត្ថិភាពទៅកាន់ដៃរ៉ូបូតតាមរយៈ Web Bluetooth សម្រាប់ការគ្រប់គ្រងដោយផ្ទាល់។",
