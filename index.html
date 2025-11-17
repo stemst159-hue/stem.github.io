@@ -607,65 +607,141 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
                 <p id="command-status" class="text-2xl font-extrabold text-green-400">WAITING FOR INPUT</p>
             </div>
 
-            <div class="main-controller-grid grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+           <!-- ================= NEW CONTROL PANEL ================= -->
 
-                <div class="flex flex-col items-center space-y-4">
-                    <button id="btn-forward" class="circle-button hover:bg-blue-700" data-command="forward">
-                        <svg class="arrow-icon" viewBox="0 0 24 24">
-                            <path d="M7 14l5-5 5 5z" fill="white"/>
-                        </svg>
-                    </button>
-                    <div class="text-xs font-semibold text-gray-300"></div>
-                    <button id="btn-backward" class="circle-button hover:bg-blue-700" data-command="backward">
-                        <svg class="arrow-icon" viewBox="0 0 24 24">
-                            <path d="M7 10l5 5 5-5z" fill="white"/>
-                        </svg>
-                    </button>
-                    <div class="text-xs font-semibold text-gray-300"></div>
-                </div>
+<style>
+/* --- Clean circular arrow buttons --- */
+.control-wrapper {
+    text-align: center;
+    padding: 20px;
+}
 
-                <div class="flex flex-col items-center space-y-4 justify-center py-6 order-last md:order-none">
-                    <button id="btn-stop" class="pill-button w-full" data-action="stop">
-                        STOP
-                    </button>
-                     <button id="btn-start" class="pill-button w-full" data-action="start">
-                        START
-                    </button>
-                   
-                </div>
+.control-dpad {
+    display: grid;
+    grid-template-columns: 80px 80px 80px;
+    grid-template-rows: 80px 80px 80px;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
 
-                <div class="flex items-center justify-center space-x-6">
-                    <button id="btn-left" class="circle-button hover:bg-blue-700" data-command="left">
-                        <svg class="arrow-icon" viewBox="0 0 24 24">
-                            <path d="M14 7l-5 5 5 5z" fill="white"/>
-                        </svg>
-                    </button>
-                    <div class="text-xs font-semibold text-gray-300"></div>
+.control-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #3b82f6;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: 0.15s;
+}
 
-                    <div class="text-xs font-semibold text-gray-300"></div>
-                    <button id="btn-right" class="circle-button hover:bg-blue-700" data-command="right">
-                        <svg class="arrow-icon" viewBox="0 0 24 24">
-                            <path d="M10 7l5 5-5 5z" fill="white"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-             <!-- ===== AUTO-MODE BUTTONS SECTION ===== -->
-        <div class="auto-mode-controller flex flex-col md:flex-row justify-center gap-6 mt-10">
+.control-btn:active {
+    transform: scale(0.9);
+}
 
-            <!-- Follow Object Mode -->
-            <button id="btn-follow" class="pill-button bg-purple-600 hover:bg-purple-700 w-full md:w-1/3"
-                    onclick="enableFollowObjectMode()">
-                FOLLOW OBJECT 🤖
-            </button>
+/* Arrow icons */
+.control-btn svg {
+    width: 35px;
+    height: 35px;
+    fill: white;
+}
 
-            <!-- Obstacle Avoid Mode -->
-            <button id="btn-avoid" class="pill-button bg-yellow-600 hover:bg-yellow-700 w-full md:w-1/3"
-                    onclick="enableObstacleAvoidMode()">
-                OBSTACLE AVOIDANCE 🚧
-            </button>
-        </div>
-        </div>
+/* Rectangle pill buttons */
+.pill-btn {
+    display: block;
+    margin: 10px auto;
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    transition: 0.15s;
+}
+
+.pill-btn:active {
+    transform: scale(0.95);
+}
+
+/* Colors */
+.btn-start { background: #4caf50; }
+.btn-stop { background: #e53935; }
+.btn-follow { background: #ffee00; color: #000; }
+.btn-avoid { background: #6cb6ff; }
+</style>
+
+<div class="control-wrapper">
+
+    <!-- D-PAD -->
+    <div class="control-dpad">
+
+        <div></div>
+        <button class="control-btn" id="btn-forward" data-cmd="F">
+            <svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5z"/></svg>
+        </button>
+        <div></div>
+
+        <button class="control-btn" id="btn-left" data-cmd="L">
+            <svg viewBox="0 0 24 24"><path d="M14 7l-5 5 5 5z"/></svg>
+        </button>
+
+        <div></div>
+
+        <button class="control-btn" id="btn-right" data-cmd="R">
+            <svg viewBox="0 0 24 24"><path d="M10 7l5 5-5 5z"/></svg>
+        </button>
+
+        <div></div>
+        <button class="control-btn" id="btn-backward" data-cmd="B">
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div></div>
+
+    </div>
+
+    <!-- START / STOP -->
+    <button class="pill-btn btn-start" id="btn-start" data-cmd="S">START</button>
+    <button class="pill-btn btn-stop" id="btn-stop" data-cmd="X">STOP</button>
+
+    <!-- AUTO MODES -->
+    <button class="pill-btn btn-follow" id="btn-follow" data-cmd="AUTO_FOLLOW">
+        FOLLO OBJECT
+    </button>
+
+    <button class="pill-btn btn-avoid" id="btn-avoid" data-cmd="AUTO_AVOID">
+        FOLLO OBJECT
+    </button>
+
+</div>
+
+<!-- ================= CONTROL SCRIPT ================= -->
+
+<script>
+// Send BT command (works with your existing serial/hc-05 script)
+async function sendControl(cmd) {
+    if (typeof sendCommand === "function") {
+        sendCommand(cmd); // call your Bluetooth function
+        console.log("Sent:", cmd);
+    }
+}
+
+// Attach button events
+document.querySelectorAll("[data-cmd]").forEach(btn => {
+    btn.addEventListener("click", () => {
+        let cmd = btn.dataset.cmd;
+        sendControl(cmd);
+    });
+});
+</script>
+
+<!-- ================ END NEW CONTROL PANEL =================== -->
+
     </section>
      </section>
     <section id="contact-tool" class="tool-section">
@@ -697,7 +773,7 @@ document.getElementById('btn-stop').addEventListener('click', () => sendCommand(
 
     <div class="tool-content">
         <p style="margin-bottom: 15px; font-size: 1.1em;">
-           code for raoming mod.
+           controller.
         </p>
 
         <textarea id="arduino-code-box" 
